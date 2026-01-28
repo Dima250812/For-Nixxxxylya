@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Для моей Никуси 🤍</title>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #fde2e4, #e0f0ff);
+        font-family: Arial, sans-serif;
+    }
+
+    .card {
+        background: white;
+        border-radius: 24px;
+        padding: 22px;
+        max-width: 340px;
+        text-align: center;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    .card img {
+        width: 100%;
+        border-radius: 18px;
+        margin-bottom: 16px;
+    }
+
+    button {
+        background: #ff9bbd;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 22px;
+        font-size: 16px;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #ff7faa;
+    }
+
+    .message {
+        margin-top: 18px;
+        font-size: 15px;
+        color: #444;
+        line-height: 1.6;
+        text-align: left;
+        white-space: pre-line;
+        display: none;
+    }
+
+    .cursor {
+        display: inline-block;
+        animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+        0%, 50%, 100% { opacity: 1; }
+        25%, 75% { opacity: 0; }
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <!-- ВСТАВЬ СЮДА ЕЁ ФОТО -->
+    <img src="photo.jpg" alt="Никусь">
+
+    <button onclick="startTyping()">Никусь, это для тебя 🤍</button>
+
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+const text = `
+Никусь…
+
+Я просто хочу, чтобы ты знала —
+я очень сильно тебя люблю.
+
+Люблю не за что-то.
+И не потому что «так надо».
+А просто за тебя.
+
+За твой голос.
+За твои слова.
+За моменты, когда ты рядом,
+даже если между нами экран.
+
+Мне не нужно, чтобы ты была
+всегда сильной или весёлой.
+Ты важна для меня любой.
+
+Я выбираю тебя.
+Каждый раз.
+Даже в тишине.
+
+И если вдруг тебе станет одиноко —
+помни, что моё сердце
+всегда рядом с тобой 🤍
+`;
+
+let index = 0;
+let started = false;
+
+function startTyping() {
+    if (started) return;
+    started = true;
+
+    const messageEl = document.getElementById("message");
+    messageEl.style.display = "block";
+
+    const interval = setInterval(() => {
+        messageEl.innerHTML = text.slice(0, index) + '<span class="cursor">|</span>';
+        index++;
+
+        if (index > text.length) {
+            clearInterval(interval);
+            messageEl.innerHTML = text;
+        }
+    }, 60); // скорость печати (меньше — быстрее)
+}
+</script>
+
+</body>
+</html>
