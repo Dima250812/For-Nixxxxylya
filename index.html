@@ -19,17 +19,17 @@
         width: 360px;
         height: 640px;
         border-radius: 32px;
-        padding: 18px;
+        padding: 16px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
     }
 
     .phone img {
         width: 100%;
         border-radius: 22px;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
+        flex-shrink: 0;
     }
 
     button {
@@ -41,6 +41,13 @@
         color: white;
         cursor: pointer;
         margin-bottom: 12px;
+        flex-shrink: 0;
+    }
+
+    .text-box {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 6px;
     }
 
     .text {
@@ -58,6 +65,15 @@
         0%,50%,100% {opacity:1;}
         25%,75% {opacity:0;}
     }
+
+    /* Красивый скролл */
+    .text-box::-webkit-scrollbar {
+        width: 4px;
+    }
+    .text-box::-webkit-scrollbar-thumb {
+        background: #ff9bbd;
+        border-radius: 10px;
+    }
 </style>
 </head>
 <body>
@@ -67,7 +83,9 @@
 
     <button onclick="startTyping()">Никуся, это для тебя 🫶🏼</button>
 
-    <div class="text" id="text"></div>
+    <div class="text-box">
+        <div class="text" id="text"></div>
+    </div>
 </div>
 
 <script>
@@ -98,13 +116,11 @@ const message = `
 В моём сердце.
 Во мне.
 
-Я не прошу ничего взамен.
 Мне просто важно, чтобы ты знала —
 ты для меня особенная.
 
 Очень.
 Безумно.
-Навсегда 🫶🏼💋🫂
 `;
 
 let i = 0;
@@ -114,6 +130,7 @@ function startTyping() {
     if (started) return;
     started = true;
     const el = document.getElementById("text");
+
     const interval = setInterval(() => {
         el.innerHTML = message.slice(0, i) + '<span class="cursor">|</span>';
         i++;
