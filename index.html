@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Для Никуси 🤍</title>
 
   <style>
@@ -26,8 +26,9 @@
       width: 100%;
       max-width: 380px;
       border-radius: 24px;
-      padding: 22px 20px 26px;
+      padding: 22px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      text-align: center;
     }
 
     .photo {
@@ -45,18 +46,37 @@
     .title {
       background: linear-gradient(90deg, #ff6fae, #ff4d8d);
       color: white;
-      text-align: center;
-      padding: 8px 14px;
+      padding: 8px 16px;
       border-radius: 999px;
       font-size: 14px;
       font-weight: 600;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    button {
+      background: linear-gradient(90deg, #ff6fae, #ff4d8d);
+      border: none;
+      color: white;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+    }
+
+    button:active {
+      transform: scale(0.97);
     }
 
     .text {
+      margin-top: 18px;
       font-size: 14.5px;
       line-height: 1.45;
       white-space: pre-line;
+      display: none;
+      text-align: left;
     }
 
     .cursor {
@@ -78,17 +98,19 @@
 
   <div class="card">
     <div class="photo">
-      <!-- ЗАМЕНИ src НА СВОЁ ФОТО -->
+      <!-- замени на своё фото -->
       <img src="photo.jpg" alt="Никуся">
     </div>
 
-    <div class="title">Жми🤍</div>
+    <div class="title">Нажми 🤍</div>
 
-    <div class="text" id="text"></div><span class="cursor"></span>
+    <button onclick="start()">Нажми 🤍</button>
+
+    <div class="text" id="text"></div><span class="cursor" id="cursor" style="display:none"></span>
   </div>
 
   <script>
-    const message = `Никусь...
+    const message = `Никусь..
 Я не знаю, как правильно это сказать поэтому скажу так, как чувствую.
 
 Я безумно тебя люблю.
@@ -117,18 +139,32 @@
 Очень.
 Безумно.`;
 
-    const el = document.getElementById("text");
     let i = 0;
+    let started = false;
 
-    function type() {
-      if (i < message.length) {
-        el.textContent += message[i];
-        i++;
-        setTimeout(type, 28);
+    function start() {
+      if (started) return;
+      started = true;
+
+      document.querySelector("button").style.display = "none";
+      const textEl = document.getElementById("text");
+      const cursor = document.getElementById("cursor");
+
+      textEl.style.display = "block";
+      cursor.style.display = "inline-block";
+
+      function type() {
+        if (i < message.length) {
+          textEl.textContent += message[i];
+          i++;
+          setTimeout(type, 28);
+        } else {
+          cursor.style.display = "none";
+        }
       }
-    }
 
-    type();
+      type();
+    }
   </script>
 
 </body>
