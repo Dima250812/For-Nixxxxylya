@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Вероника + Дима</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07080f;
+      --surface: rgba(12,16,30,0.72);
+      --border: rgba(120,150,220,0.12);
+      --border-warm: rgba(200,160,120,0.18);
+      --muted: #7a90c0;
+      --accent-blue: #6a8ee8;
+      --accent-warm: #d4a96a;
+      --accent-rose: #c87fa0;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html { scroll-behavior:smooth; }
+    body {
+      background:var(--bg);
+      font-family:'DM Mono',monospace;
+      color:#dde7ff;
+      min-height:100vh;
+      overflow-x:hidden;
+      padding:0 0 4rem;
+    }
+    body::before {
+      content:''; position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:9999; opacity:0.4;
+    }
+    .orb { position:fixed; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0; }
+    .orb-1 { width:400px;height:400px; background:radial-gradient(circle,rgba(70,100,210,0.11),transparent 70%); top:-100px;left:-120px; animation:o1 20s ease-in-out infinite alternate; }
+    .orb-2 { width:320px;height:320px; background:radial-gradient(circle,rgba(180,100,80,0.08),transparent 70%); bottom:15%;right:-80px; animation:o2 25s ease-in-out infinite alternate; }
+    .orb-3 { width:260px;height:260px; background:radial-gradient(circle,rgba(160,80,130,0.07),transparent 70%); top:55%;left:25%; animation:o3 30s ease-in-out infinite alternate; }
+    @keyframes o1 { to { transform:translate(40px,35px) scale(1.1); } }
+    @keyframes o2 { to { transform:translate(-30px,-25px) scale(1.08); } }
+    @keyframes o3 { to { transform:translate(25px,-45px) scale(0.93); } }
+    .particles { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .particle { position:absolute; border-radius:50%; animation:floatP linear infinite; }
+    @keyframes floatP { 0% { transform:translateY(0); opacity:0; } 10% { opacity:1; } 90% { opacity:0.4; } 100% { transform:translateY(-100vh); opacity:0; } }
+    .container { max-width:680px; margin:0 auto; padding:2rem 1.2rem; position:relative; z-index:1; }
+
+    /* SECTION LABEL */
+    .section-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:1rem; }
+
+    /* HEADER */
+    .header { text-align:center; padding:3rem 1rem 2rem; opacity:0; animation:fadeUp 1s ease 0.1s forwards; }
+    .header-label { font-size:0.58rem; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:0.9rem; }
+    .header-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2.6rem,8vw,4.2rem);
+      font-weight:300; font-style:italic;
+      letter-spacing:-1px; line-height:1;
+      background:linear-gradient(135deg,#e8f0ff 0%,#c8b8ff 45%,#f0c8a0 100%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      margin-bottom:0.4rem;
+    }
+    .header-sub { font-size:0.6rem; color:var(--muted); letter-spacing:2px; }
+
+    /* TIMER */
+    .time-card {
+      background:var(--surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border-radius:2rem; padding:2.2rem 1.5rem;
+      text-align:center; border:0.5px solid var(--border);
+      margin-bottom:1.5rem; opacity:0; animation:fadeUp 1s ease 0.25s forwards;
+      position:relative; overflow:hidden;
+    }
+    .time-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(100,140,230,0.06),transparent 70%); pointer-events:none; }
+    .time-card-label { font-size:0.58rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:1.2rem; }
+    .days-row { display:flex; align-items:flex-end; justify-content:center; gap:0.3rem; margin-bottom:0.4rem; }
+    .days-digit { font-family:'Cormorant Garamond',serif; font-size:5rem; font-weight:300; color:#fff; line-height:1; letter-spacing:-2px; }
+    .days-unit { font-size:0.62rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; padding-bottom:0.85rem; }
+    .time-caption { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-style:italic; color:rgba(180,200,255,0.65); margin-top:0.3rem; }
+    .date-pill { display:inline-block; background:rgba(255,255,255,0.03); border:0.5px solid var(--border); border-radius:40px; font-size:0.58rem; color:#6a80b0; padding:0.25rem 1rem; margin-top:1rem; letter-spacing:1px; }
+
+    /* PHOTO GRID */
+    .photo-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; opacity:0; animation:fadeUp 1s ease 0.4s forwards; }
+    .photo-card { border-radius:1.8rem; overflow:hidden; border:0.5px solid var(--border); background:rgba(10,13,24,0.9); position:relative; transition:transform 0.3s, border-color 0.3s; }
+    .photo-card:hover { transform:translateY(-3px); }
+    .photo-card.her { border-color:rgba(180,100,140,0.22); }
+    .photo-card.him { border-color:rgba(80,110,200,0.22); }
+    .photo-card.her:hover { border-color:rgba(180,100,140,0.5); }
+    .photo-card.him:hover { border-color:rgba(80,110,200,0.5); }
+    .photo-zone { width:100%; aspect-ratio:3/4; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; }
+    .photo-zone img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; display:none; }
+    .photo-zone img.loaded { display:block; }
+    .photo-placeholder { display:flex; flex-direction:column; align-items:center; gap:0.7rem; padding:1.5rem 0.8rem; text-align:center; position:relative; z-index:1; }
+    .photo-zone img.loaded ~ .photo-placeholder { display:none; }
+    .photo-icon { width:44px; height:44px; border-radius:50%; border:0.5px solid rgba(80,110,200,0.25); display:flex; align-items:center; justify-content:center; background:rgba(80,110,200,0.05); transition:background 0.3s; }
+    .photo-card.her .photo-icon { border-color:rgba(180,100,140,0.3); background:rgba(180,100,140,0.05); }
+    .photo-card:hover .photo-icon { background:rgba(255,255,255,0.07); }
+    .photo-icon svg { width:18px; height:18px; stroke:var(--accent-blue); fill:none; stroke-width:1.3; stroke-linecap:round; }
+    .photo-card.her .photo-icon svg { stroke:var(--accent-rose); }
+    .photo-hint { font-size:0.52rem; color:#3a4d72; letter-spacing:1px; text-transform:uppercase; line-height:1.5; }
+    .photo-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(7,8,15,0.88) 0%,transparent 60%); display:none; pointer-events:none; z-index:1; }
+    .photo-zone img.loaded ~ .photo-overlay { display:block; }
+    .photo-footer { padding:0.9rem 1.1rem 1rem; border-top:0.5px solid rgba(255,255,255,0.04); }
+    .photo-person-name { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; font-weight:300; color:#dde8ff; line-height:1; margin-bottom:0.25rem; }
+    .photo-card.her .photo-person-name { color:#f0d8ea; }
+    .photo-person-role { font-size:0.52rem; color:#3a4d72; letter-spacing:2px; text-transform:uppercase; }
+    input[type="file"] { display:none; }
+
+    /* BIO */
+    .bio-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+    .bio-card { background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:1.8rem; padding:1.4rem 1.2rem; border:0.5px solid var(--border); opacity:0; position:relative; overflow:hidden; transition:border-color 0.3s, transform 0.3s; }
+    .bio-card:hover { transform:translateY(-2px); }
+    .bio-card:nth-child(1) { animation:fadeUp 1s ease 0.55s forwards; }
+    .bio-card:nth-child(2) { animation:fadeUp 1s ease 0.65s forwards; }
+    .bio-card.her { border-color:rgba(180,100,140,0.15); }
+    .bio-card.her:hover { border-color:rgba(180,100,140,0.35); }
+    .bio-card.him:hover { border-color:rgba(80,110,200,0.3); }
+    .bio-card.her::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 20% 100%,rgba(180,100,140,0.06),transparent 60%); pointer-events:none; }
+    .bio-tag { font-size:0.52rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; }
+    .bio-name { font-family:'Cormorant Garamond',serif; font-size:1.7rem; font-weight:300; font-style:italic; color:#edf2ff; margin-bottom:0.25rem; line-height:1; }
+    .bio-card.her .bio-name { color:#f5e8f0; }
+    .bio-age { font-size:0.58rem; color:#3a4d72; margin-bottom:0.9rem; letter-spacing:1px; }
+    .bio-desc { font-size:0.76rem; line-height:1.7; color:#7a90c0; margin-bottom:0.9rem; }
+    .bio-tags { display:flex; flex-wrap:wrap; gap:0.35rem; }
+    .bio-tag-chip { font-size:0.55rem; color:var(--muted); border:0.5px solid var(--border); border-radius:20px; padding:0.18rem 0.55rem; }
+
+    /* WARM WORDS */
+    .warm-card { background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:2rem; padding:2rem 1.5rem; margin-bottom:1.5rem; border:0.5px solid var(--border-warm); opacity:0; animation:fadeUp 1s ease 0.75s forwards; position:relative; overflow:hidden; }
+    .warm-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 110%,rgba(200,130,90,0.07),transparent 60%); pointer-events:none; }
+    .warm-card-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:var(--accent-warm); opacity:0.65; margin-bottom:1.2rem; }
+    .warm-quote { font-family:'Cormorant Garamond',serif; font-size:clamp(1.25rem,4vw,1.6rem); font-weight:300; font-style:italic; line-height:1.6; color:#e8efff; margin-bottom:1.4rem; }
+    .warm-quote span { color:var(--accent-warm); }
+    .warm-divider { width:36px; height:0.5px; background:var(--border-warm); margin:1.1rem 0; }
+    .warm-list { list-style:none; display:flex; flex-direction:column; gap:0.7rem; }
+    .warm-list li { font-size:0.8rem; line-height:1.65; color:#8da3d0; padding-left:0.9rem; border-left:1px solid rgba(200,140,90,0.2); transition:border-color 0.3s, color 0.3s; }
+    .warm-list li:hover { border-color:rgba(200,140,90,0.55); color:#c0d0f0; }
+
+    /* MUSIC */
+    .music-card { background:#060810; border-radius:2rem; padding:1.5rem; margin-bottom:1.5rem; border:0.5px solid rgba(50,70,130,0.4); opacity:0; animation:fadeUp 1s ease 0.9s forwards; }
+    .music-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:1rem; }
+    .track-card { background:rgba(255,255,255,0.025); border-radius:1.4rem; padding:1rem 1.2rem; display:flex; align-items:center; gap:1rem; border:0.5px solid rgba(50,70,130,0.3); }
+    .track-art { width:42px; height:42px; border-radius:0.7rem; background:linear-gradient(135deg,#181f3a,#0d1530); border:0.5px solid rgba(70,90,170,0.3); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .track-art-dot { width:9px; height:9px; border-radius:50%; background:var(--accent-blue); opacity:0.45; }
+    .track-art-dot.playing { animation:pulse 1.4s ease infinite; }
+    @keyframes pulse { 0%,100% { transform:scale(1); opacity:0.45; } 50% { transform:scale(1.4); opacity:1; } }
+    .track-info { flex:1; }
+    .track-name { font-size:0.9rem; color:#dde8ff; margin-bottom:0.2rem; }
+    .track-artist { font-size:0.62rem; color:var(--muted); }
+    .play-btn { background:rgba(70,100,190,0.14); border:0.5px solid rgba(70,100,190,0.3); width:40px; height:40px; border-radius:50%; color:#9ab8ff; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s, transform 0.15s; flex-shrink:0; }
+    .play-btn:active { transform:scale(0.9); }
+    .play-btn:hover { background:rgba(70,100,190,0.3); }
+    .play-btn svg { width:14px; height:14px; fill:currentColor; }
+    .progress-bar { height:2px; background:rgba(255,255,255,0.05); border-radius:2px; margin-top:0.8rem; overflow:hidden; display:none; }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent-blue),var(--accent-rose)); border-radius:2px; width:0%; transition:width 0.3s linear; }
+    .track-hint { font-size:0.55rem; color:#2e3e60; text-align:center; margin-top:0.7rem; }
+
+    /* ══════════════════════════════════════
+       COUNTDOWN до месяцевщины
+    ══════════════════════════════════════ */
+    .countdown-card {
+      background:var(--surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border-radius:2rem; padding:2rem 1.5rem;
+      margin-bottom:1.5rem; border:0.5px solid rgba(160,120,200,0.18);
+      opacity:0; animation:fadeUp 1s ease 1s forwards;
+      position:relative; overflow:hidden;
+    }
+    .countdown-card::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse at 100% 0%,rgba(150,100,220,0.07),transparent 60%);
+      pointer-events:none;
+    }
+    .countdown-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:rgba(180,140,230,0.6); margin-bottom:0.5rem; }
+    .countdown-next { font-family:'Cormorant Garamond',serif; font-size:1rem; font-style:italic; color:rgba(200,180,255,0.55); margin-bottom:1.5rem; }
+    .countdown-units {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:0.8rem;
+    }
+    .countdown-unit {
+      background:rgba(255,255,255,0.03);
+      border:0.5px solid rgba(140,100,210,0.15);
+      border-radius:1.2rem; padding:1rem 0.5rem;
+      text-align:center;
+      position:relative; overflow:hidden;
+    }
+    .countdown-unit::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(180deg,rgba(150,100,220,0.04),transparent);
+      pointer-events:none;
+    }
+    .cu-num {
+      font-family:'Cormorant Garamond',serif;
+      font-size:2.2rem; font-weight:300; color:#e8e0ff;
+      line-height:1; display:block;
+      transition:transform 0.3s;
+    }
+    .cu-num.flip { animation:numFlip 0.35s ease; }
+    @keyframes numFlip {
+      0%   { transform:translateY(-8px); opacity:0; }
+      100% { transform:translateY(0);    opacity:1; }
+    }
+    .cu-label { font-size:0.48rem; letter-spacing:2px; text-transform:uppercase; color:#5a4a80; margin-top:0.3rem; }
+    .countdown-bar-wrap { margin-top:1.3rem; }
+    .countdown-bar-label { display:flex; justify-content:space-between; font-size:0.52rem; color:#4a3d6a; margin-bottom:0.4rem; }
+    .countdown-bar-track { height:2px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden; }
+    .countdown-bar-fill { height:100%; background:linear-gradient(90deg,rgba(120,80,200,0.6),rgba(190,120,200,0.6)); border-radius:2px; transition:width 1s ease; }
+
+    /* ══════════════════════════════════════
+       TIMELINE
+    ══════════════════════════════════════ */
+    .timeline-card {
+      background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-radius:2rem; padding:2rem 1.5rem;
+      margin-bottom:1.5rem; border:0.5px solid var(--border);
+      opacity:0; animation:fadeUp 1s ease 1.1s forwards;
+    }
+    .timeline-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:1.8rem; }
+    .timeline { position:relative; padding-left:1.4rem; }
+    .timeline::before {
+      content:''; position:absolute;
+      left:0; top:6px; bottom:0;
+      width:1px;
+      background:linear-gradient(180deg,var(--accent-blue),rgba(200,130,160,0.4),transparent);
+    }
+    .tl-item {
+      position:relative; margin-bottom:2rem;
+      opacity:0; transform:translateX(-10px);
+      transition:opacity 0.6s ease, transform 0.6s ease;
+    }
+    .tl-item.visible { opacity:1; transform:translateX(0); }
+    .tl-item:last-child { margin-bottom:0; }
+    .tl-dot {
+      position:absolute; left:-1.75rem; top:4px;
+      width:8px; height:8px; border-radius:50%;
+      background:var(--accent-blue);
+      border:2px solid var(--bg);
+      box-shadow:0 0 8px rgba(100,140,230,0.5);
+    }
+    .tl-item.warm .tl-dot { background:var(--accent-warm); box-shadow:0 0 8px rgba(200,160,90,0.5); }
+    .tl-item.rose .tl-dot { background:var(--accent-rose); box-shadow:0 0 8px rgba(200,120,160,0.5); }
+    .tl-date { font-size:0.55rem; letter-spacing:2px; color:#4a5e80; text-transform:uppercase; margin-bottom:0.3rem; }
+    .tl-title { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-style:italic; color:#d8e4ff; margin-bottom:0.25rem; }
+    .tl-desc { font-size:0.75rem; line-height:1.6; color:#6a80aa; }
+    .tl-item.warm .tl-title { color:#eddfc0; }
+    .tl-item.rose .tl-title { color:#f0d0e0; }
+
+    /* ══════════════════════════════════════
+       GALLERY
+    ══════════════════════════════════════ */
+    .gallery-card {
+      background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-radius:2rem; padding:2rem 1.5rem;
+      margin-bottom:1.5rem; border:0.5px solid var(--border-warm);
+      opacity:0; animation:fadeUp 1s ease 1.2s forwards;
+    }
+    .gallery-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:var(--accent-warm); opacity:0.6; margin-bottom:1.2rem; }
+
+    .gallery-add-btn {
+      width:100%; padding:1rem;
+      background:rgba(200,140,90,0.05);
+      border:0.5px dashed rgba(200,140,90,0.25);
+      border-radius:1.2rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:0.7rem;
+      color:#5a6e8a; font-family:'DM Mono',monospace; font-size:0.62rem;
+      letter-spacing:1px; text-transform:uppercase;
+      transition:background 0.2s, border-color 0.2s, color 0.2s;
+      margin-bottom:1.2rem;
+    }
+    .gallery-add-btn:hover { background:rgba(200,140,90,0.1); border-color:rgba(200,140,90,0.45); color:#9ab0d0; }
+    .gallery-add-btn svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.3; stroke-linecap:round; }
+
+    .gallery-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+    .gallery-item {
+      position:relative; border-radius:1.2rem; overflow:hidden;
+      border:0.5px solid var(--border);
+      background:#060810;
+      animation:galleryIn 0.5s ease forwards;
+    }
+    @keyframes galleryIn { from { opacity:0; transform:scale(0.93); } to { opacity:1; transform:scale(1); } }
+
+    .gallery-img-wrap { width:100%; aspect-ratio:1/1; overflow:hidden; position:relative; }
+    .gallery-img-wrap img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.5s ease; }
+    .gallery-item:hover .gallery-img-wrap img { transform:scale(1.06); }
+
+    .gallery-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top,rgba(7,8,15,0.85) 0%,transparent 55%);
+      pointer-events:none;
+    }
+    .gallery-caption-wrap {
+      padding:0.7rem 0.8rem;
+      position:relative;
+    }
+    .gallery-caption {
+      font-size:0.7rem; color:#8da3c0; line-height:1.4;
+      width:100%; background:transparent; border:none; outline:none;
+      font-family:'DM Mono',monospace; resize:none;
+      caret-color:var(--accent-warm);
+    }
+    .gallery-caption::placeholder { color:#3a4d68; }
+    .gallery-del {
+      position:absolute; top:0.5rem; right:0.5rem;
+      width:22px; height:22px; border-radius:50%;
+      background:rgba(200,80,80,0.1); border:0.5px solid rgba(200,80,80,0.2);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; opacity:0; transition:opacity 0.2s;
+    }
+    .gallery-item:hover .gallery-del { opacity:1; }
+    .gallery-del svg { width:10px; height:10px; stroke:#c07070; fill:none; stroke-width:2; stroke-linecap:round; }
+
+    .gallery-empty {
+      grid-column:1/-1; text-align:center;
+      padding:2rem 1rem;
+      font-size:0.65rem; color:#2e3e58; letter-spacing:1px;
+    }
+
+    /* GLOW RING */
+    .days-glow-ring {
+      display:inline-flex; align-items:flex-end; justify-content:center;
+      position:relative;
+    }
+    .days-glow-ring::before {
+      content:'';
+      position:absolute;
+      inset:-18px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(100,140,230,0.13) 0%, transparent 70%);
+      animation:ringBreath 4s ease-in-out infinite;
+    }
+    @keyframes ringBreath {
+      0%,100% { transform:scale(1); opacity:0.6; }
+      50%      { transform:scale(1.18); opacity:1; }
+    }
+
+    /* THOUGHT CARD */
+    .thought-card {
+      background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-radius:2rem; padding:2rem 1.5rem;
+      margin-bottom:1.5rem; border:0.5px solid rgba(120,100,200,0.2);
+      opacity:0; animation:fadeUp 1s ease 0.85s forwards;
+      position:relative; overflow:hidden;
+    }
+    .thought-card::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse at 30% 0%, rgba(120,80,200,0.06), transparent 60%);
+      pointer-events:none;
+    }
+    .thought-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:rgba(160,130,230,0.55); margin-bottom:1.2rem; }
+    .thought-text {
+      font-family:'Cormorant Garamond', serif;
+      font-size:clamp(1.1rem,3.5vw,1.45rem);
+      font-weight:300; font-style:italic;
+      line-height:1.65; color:#d8e4ff;
+      min-height:4.5rem;
+      border-left:1px solid rgba(120,80,200,0.25);
+      padding-left:1rem;
+      margin-bottom:1.4rem;
+      transition:opacity 0.35s;
+    }
+    .thought-text.fading { opacity:0; }
+    .thought-cursor {
+      display:inline-block; width:1.5px; height:1em;
+      background:rgba(160,130,230,0.6);
+      vertical-align:text-bottom; margin-left:2px;
+      animation:blink 1.1s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .thought-btn {
+      background:rgba(120,80,200,0.08);
+      border:0.5px solid rgba(120,80,200,0.22);
+      border-radius:40px; padding:0.55rem 1.4rem;
+      font-family:'DM Mono',monospace; font-size:0.6rem;
+      letter-spacing:2px; text-transform:uppercase;
+      color:#9a80d0; cursor:pointer;
+      transition:background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .thought-btn:hover { background:rgba(120,80,200,0.18); border-color:rgba(120,80,200,0.45); color:#c8b0f0; }
+    .thought-btn:active { transform:scale(0.96); }
+
+    /* PLAYLIST CARD — YouTube */
+    .playlist-card {
+      background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-radius:2rem; padding:2rem 1.5rem;
+      margin-bottom:1.5rem; border:0.5px solid rgba(80,110,200,0.18);
+      opacity:0; animation:fadeUp 1s ease 1.25s forwards;
+      position:relative; overflow:hidden;
+    }
+    .playlist-card::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse at 80% 100%, rgba(80,100,200,0.06), transparent 60%);
+      pointer-events:none;
+    }
+    .playlist-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:1.2rem; }
+
+    .pl-tracks { display:flex; flex-direction:column; gap:0.7rem; margin-bottom:1.2rem; }
+
+    .pl-track {
+      border-radius:1.3rem; overflow:hidden;
+      border:0.5px solid rgba(255,255,255,0.05);
+      background:rgba(255,255,255,0.02);
+      animation:galleryIn 0.4s ease forwards;
+      transition:border-color 0.3s;
+    }
+    .pl-track.hers { border-color:rgba(180,100,140,0.18); }
+    .pl-track.his  { border-color:rgba(80,110,200,0.18); }
+    .pl-track.hers:hover { border-color:rgba(180,100,140,0.4); }
+    .pl-track.his:hover  { border-color:rgba(80,110,200,0.4); }
+
+    .pl-track-header {
+      display:flex; align-items:center; gap:0.9rem;
+      padding:0.85rem 1rem; cursor:pointer; user-select:none;
+    }
+    .pl-track-bar {
+      width:3px; height:36px; border-radius:2px; flex-shrink:0;
+    }
+    .pl-track.hers .pl-track-bar { background:linear-gradient(180deg, var(--accent-rose), rgba(180,100,140,0.3)); }
+    .pl-track.his  .pl-track-bar { background:linear-gradient(180deg, var(--accent-blue), rgba(80,110,200,0.3)); }
+
+    .pl-track-info { flex:1; min-width:0; }
+    .pl-track-name {
+      font-size:0.88rem; color:#dde8ff;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      margin-bottom:0.15rem;
+    }
+    .pl-track-meta { font-size:0.52rem; letter-spacing:2px; text-transform:uppercase; color:#3a4d72; }
+    .pl-track.hers .pl-track-meta { color:rgba(180,100,140,0.5); }
+    .pl-track.his  .pl-track-meta { color:rgba(80,110,200,0.5); }
+
+    .pl-play-btn {
+      width:36px; height:36px; border-radius:50%; flex-shrink:0;
+      border:0.5px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.04);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:background 0.2s, transform 0.15s;
+      color:#9ab8ff;
+    }
+    .pl-track.hers .pl-play-btn { color:var(--accent-rose); border-color:rgba(180,100,140,0.2); }
+    .pl-play-btn:hover { background:rgba(255,255,255,0.1); transform:scale(1.08); }
+    .pl-play-btn svg { width:13px; height:13px; fill:currentColor; }
+    .pl-play-btn.playing svg { display:none; }
+    .pl-play-btn.playing::after { content:''; display:block; width:10px; height:10px; border:1.5px solid currentColor; border-radius:1px; }
+
+    .pl-del-btn {
+      width:28px; height:28px; border-radius:50%; flex-shrink:0;
+      border:0.5px solid rgba(200,80,80,0.15);
+      background:rgba(200,80,80,0.06);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; opacity:0; transition:opacity 0.2s;
+    }
+    .pl-track:hover .pl-del-btn { opacity:1; }
+    .pl-del-btn svg { width:9px; height:9px; stroke:#c07070; fill:none; stroke-width:2; stroke-linecap:round; }
+
+    .pl-track.playing-now { border-color:rgba(100,140,230,0.4) !important; }
+    .pl-track.playing-now.hers { border-color:rgba(180,100,140,0.45) !important; }
+    .pl-track-bar-inner {
+      width:3px; height:0; border-radius:2px; transition:height 0.4s ease;
+      background:inherit;
+    }
+    .pl-playing-dots {
+      display:none; align-items:flex-end; gap:2px; height:16px;
+    }
+    .pl-track.playing-now .pl-playing-dots { display:flex; }
+    .pl-playing-dots span {
+      display:block; width:3px; background:currentColor; border-radius:2px;
+      animation:soundBar 0.8s ease-in-out infinite alternate;
+    }
+    .pl-playing-dots span:nth-child(2) { animation-delay:0.15s; }
+    .pl-playing-dots span:nth-child(3) { animation-delay:0.3s; }
+    @keyframes soundBar {
+      from { height:4px; opacity:0.4; }
+      to   { height:14px; opacity:1; }
+    }
+    .pl-embed-wrap { display:none; }
+
+    /* Add form */
+    .pl-add-form {
+      background:rgba(255,255,255,0.02); border:0.5px dashed rgba(100,140,230,0.2);
+      border-radius:1.3rem; padding:1.1rem 1rem;
+    }
+    .pl-form-row { display:flex; gap:0.5rem; margin-bottom:0.6rem; flex-wrap:wrap; }
+    .pl-form-row:last-child { margin-bottom:0; }
+    .pl-input {
+      flex:1; min-width:140px;
+      background:rgba(255,255,255,0.03); border:0.5px solid rgba(255,255,255,0.07);
+      border-radius:0.75rem; padding:0.6rem 0.85rem;
+      font-family:'DM Mono',monospace; font-size:0.7rem; color:#dde8ff;
+      outline:none; caret-color:var(--accent-blue); transition:border-color 0.2s;
+    }
+    .pl-input:focus { border-color:rgba(100,140,230,0.4); }
+    .pl-input::placeholder { color:#2e3e5a; }
+    .pl-who-btn {
+      background:rgba(180,100,140,0.07); border:0.5px solid rgba(180,100,140,0.25);
+      border-radius:0.75rem; padding:0.6rem 0.9rem;
+      font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:1px;
+      color:var(--accent-rose); cursor:pointer; transition:all 0.2s; white-space:nowrap;
+    }
+    .pl-who-btn.his { background:rgba(80,110,200,0.07); border-color:rgba(80,110,200,0.25); color:var(--accent-blue); }
+    .pl-add-btn {
+      width:100%;
+      background:rgba(100,140,230,0.1); border:0.5px solid rgba(100,140,230,0.25);
+      border-radius:0.75rem; padding:0.65rem 1rem;
+      font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:2px; text-transform:uppercase;
+      color:#9ab8ff; cursor:pointer; transition:all 0.2s;
+    }
+    .pl-add-btn:hover { background:rgba(100,140,230,0.2); border-color:rgba(100,140,230,0.45); }
+    .pl-empty { font-size:0.65rem; color:#2e3e58; text-align:center; padding:1rem 0 0.5rem; letter-spacing:1px; }
+
+    /* MOON CARD */
+    .moon-card {
+      background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-radius:2rem; padding:2rem 1.5rem;
+      margin-bottom:1.5rem; border:0.5px solid rgba(180,180,220,0.1);
+      opacity:0; animation:fadeUp 1s ease 1.3s forwards;
+      position:relative; overflow:hidden;
+      display:flex; align-items:center; gap:2rem;
+    }
+    .moon-card::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse at 10% 50%, rgba(180,180,240,0.05), transparent 60%);
+      pointer-events:none;
+    }
+    .moon-visual { flex-shrink:0; position:relative; width:72px; height:72px; }
+    .moon-svg { width:72px; height:72px; }
+    .moon-glow {
+      position:absolute; inset:-12px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(200,200,255,0.08), transparent 70%);
+      animation:ringBreath 5s ease-in-out infinite;
+    }
+    .moon-info { flex:1; }
+    .moon-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; }
+    .moon-phase-name { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-style:italic; color:#e8f0ff; margin-bottom:0.25rem; line-height:1.1; }
+    .moon-detail { font-size:0.65rem; color:#4a5e80; line-height:1.5; }
+    .moon-pct { font-size:0.58rem; color:#6a80aa; margin-top:0.3rem; letter-spacing:1px; }
+
+    /* DAILY QUOTE */
+    .quote-card {
+      background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-radius:2rem; padding:2rem 1.5rem;
+      margin-bottom:1.5rem; border:0.5px solid var(--border-warm);
+      opacity:0; animation:fadeUp 1s ease 1.35s forwards;
+      position:relative; overflow:hidden;
+    }
+    .quote-card::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse at 50% 100%, rgba(200,130,80,0.05), transparent 60%);
+      pointer-events:none;
+    }
+    .quote-card-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:rgba(200,160,100,0.5); margin-bottom:1.2rem; }
+    .quote-text {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(1.15rem,3.8vw,1.5rem);
+      font-weight:300; font-style:italic;
+      line-height:1.65; color:#e8efff;
+      border-left:1px solid rgba(200,140,80,0.25);
+      padding-left:1rem; margin-bottom:1rem;
+      min-height:3.5rem;
+      transition:opacity 0.5s;
+    }
+    .quote-text.fading { opacity:0; }
+    .quote-author { font-size:0.58rem; color:#4a5e72; letter-spacing:2px; text-transform:uppercase; padding-left:1rem; }
+    .quote-date-pill { display:inline-block; background:rgba(200,140,80,0.05); border:0.5px solid rgba(200,140,80,0.15); border-radius:30px; font-size:0.52rem; color:#5a5040; padding:0.2rem 0.75rem; margin-top:0.9rem; letter-spacing:1px; }
+
+    /* NUMBERS CARD */
+    .numbers-card {
+      background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-radius:2rem; padding:2rem 1.5rem;
+      margin-bottom:1.5rem; border:0.5px solid rgba(100,140,230,0.15);
+      opacity:0; animation:fadeUp 1s ease 1.4s forwards;
+      position:relative; overflow:hidden;
+    }
+    .numbers-card::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse at 0% 50%, rgba(80,110,200,0.05), transparent 60%);
+      pointer-events:none;
+    }
+    .numbers-label { font-size:0.52rem; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:1.4rem; }
+    .numbers-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+    .num-block {
+      background:rgba(255,255,255,0.02); border:0.5px solid rgba(255,255,255,0.05);
+      border-radius:1.2rem; padding:1.1rem 1rem; text-align:center;
+      transition:border-color 0.3s, transform 0.3s;
+    }
+    .num-block:hover { transform:translateY(-2px); border-color:rgba(100,140,230,0.2); }
+    .num-block.wide { grid-column:1/-1; }
+    .num-val {
+      font-family:'Cormorant Garamond',serif;
+      font-size:2rem; font-weight:300; color:#e8f0ff;
+      line-height:1; margin-bottom:0.3rem;
+    }
+    .num-val.small { font-size:1.3rem; }
+    .num-desc { font-size:0.52rem; letter-spacing:2px; text-transform:uppercase; color:#3a4d72; }
+    .num-cities {
+      display:flex; align-items:center; justify-content:center; gap:0.8rem;
+      font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-style:italic;
+      color:#8da3c0; margin-bottom:0.3rem;
+    }
+    .num-cities span { color:#dde8ff; }
+    .num-line { width:30px; height:1px; background:linear-gradient(90deg, var(--accent-rose), var(--accent-blue)); }
+
+    /* FOOTER */
+    .footer { text-align:center; padding-top:2rem; border-top:0.5px solid rgba(20,28,55,0.9); margin-top:0.5rem; opacity:0; animation:fadeIn 1.5s ease 1.3s forwards; }
+    .footer-text { font-size:0.58rem; color:#2c3a5a; letter-spacing:2px; text-transform:uppercase; }
+    .footer-love { font-family:'Cormorant Garamond',serif; font-size:1rem; font-style:italic; color:rgba(130,155,210,0.28); margin-top:0.5rem; }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="particles" id="particles"></div>
+<canvas id="meteorCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.55;"></canvas>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-label">история одна на двоих</div>
+    <div class="header-title">Наша мини история</div>
+    <div class="header-sub">с 23.11.2025</div>
+  </div>
+
+  <!-- DAYS COUNTER -->
+  <div class="time-card">
+    <div class="time-card-label">мы вместе уже</div>
+    <div class="days-row">
+      <div class="days-glow-ring">
+        <div class="days-digit" id="daysTogether">0</div>
+      </div>
+      <div class="days-unit">дней</div>
+    </div>
+    <div class="time-caption">и каждый из них — не зря</div>
+    <div class="date-pill">23 ноября 2025 — сегодня</div>
+  </div>
+
+  <!-- PHOTOS -->
+  <div class="photo-grid">
+    <div class="photo-card him">
+      <div class="photo-zone" onclick="document.getElementById('photoHim').click()">
+        <img id="imgHim" src="" alt="Дима">
+        <div class="photo-placeholder">
+          <div class="photo-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M9 5l1.5-2h3L15 5"/></svg></div>
+          <div class="photo-hint">добавь своё фото</div>
+        </div>
+        <div class="photo-overlay"></div>
+      </div>
+      <div class="photo-footer">
+        <div class="photo-person-name">Дима</div>
+        <div class="photo-person-role">он</div>
+      </div>
+      <input type="file" id="photoHim" accept="image/*">
+    </div>
+    <div class="photo-card her">
+      <div class="photo-zone" onclick="document.getElementById('photoHer').click()">
+        <img id="imgHer" src="" alt="Вероника">
+        <div class="photo-placeholder">
+          <div class="photo-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M9 5l1.5-2h3L15 5"/></svg></div>
+          <div class="photo-hint">добавь её фото</div>
+        </div>
+        <div class="photo-overlay"></div>
+      </div>
+      <div class="photo-footer">
+        <div class="photo-person-name">Вероника</div>
+        <div class="photo-person-role">она</div>
+      </div>
+      <input type="file" id="photoHer" accept="image/*">
+    </div>
+  </div>
+
+  <!-- BIO -->
+  <div class="bio-grid">
+    <div class="bio-card her">
+      <div class="bio-tag">она</div>
+      <div class="bio-name">Вероника</div>
+      <div class="bio-age">16 лет</div>
+      <div class="bio-desc">Улыбается так, что всё вокруг теплеет. Играет в волейбол и плетёт браслеты. Красивая — и даже об этом не знает.</div>
+      <div class="bio-tags">
+        <span class="bio-tag-chip">волейбол</span>
+        <span class="bio-tag-chip">браслеты</span>
+        <span class="bio-tag-chip">её улыбка</span>
+      </div>
+    </div>
+    <div class="bio-card him">
+      <div class="bio-tag">он</div>
+      <div class="bio-name">Дима</div>
+      <div class="bio-age">13 лет</div>
+      <div class="bio-desc">Кодит, ищет то, что другие не видят. Может не спать до трёх — и всё равно сделает. Любит её тихо, но всерьёз.</div>
+      <div class="bio-tags">
+        <span class="bio-tag-chip">кодинг</span>
+        <span class="bio-tag-chip">кибербез</span>
+        <span class="bio-tag-chip">быть рядом</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WARM WORDS -->
+  <div class="warm-card">
+    <div class="warm-card-label">слова для неё</div>
+    <div class="warm-quote">Ты та, о ком я думаю, когда всё остальное <span>не важно</span>.</div>
+    <div class="warm-divider"></div>
+    <ul class="warm-list">
+      <li>Ты не просто красивая — ты та, рядом с которой я хочу быть, когда не ищу ничего.</li>
+      <li>Мне нравится, как ты смеёшься, когда думаешь, что я не смотрю. Я смотрю.</li>
+      <li>Я не умею говорить красиво вслух — но ты заслуживаешь, чтобы это было сказано.</li>
+      <li>Спасибо, что ты есть. Правда. Просто — спасибо.</li>
+      <li>Ты моя самая любимая часть каждого дня.</li>
+    </ul>
+  </div>
+
+  <!-- MUSIC -->
+  <div class="music-card">
+    <div class="music-label">её песня</div>
+    <div class="track-card">
+      <div class="track-art"><div class="track-art-dot" id="trackDot"></div></div>
+      <div class="track-info">
+        <div class="track-name">Танцы</div>
+        <div class="track-artist">ssshhhiiittt!</div>
+      </div>
+      <audio id="loveTrack" preload="metadata"><source src="song.mp3" type="audio/mpeg"></audio>
+      <button id="playBtn" class="play-btn" aria-label="Play">
+        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
+    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="track-hint">положи song.mp3 рядом с этим файлом</div>
+  </div>
+
+  <!-- THOUGHT CARD -->
+  <div class="thought-card">
+    <div class="thought-label">случайная мысль о тебе</div>
+    <div class="thought-text" id="thoughtText"><span id="thoughtTyped"></span><span class="thought-cursor"></span></div>
+    <button class="thought-btn" id="thoughtBtn">другая мысль</button>
+  </div>
+
+  <!-- ════════════════════════════════
+       COUNTDOWN до месяцевщины
+  ════════════════════════════════ -->
+  <div class="countdown-card">
+    <div class="countdown-label">осталось до</div>
+    <div class="countdown-next" id="cdNextLabel">следующей месяцевщины</div>
+    <div class="countdown-units">
+      <div class="countdown-unit">
+        <span class="cu-num" id="cdDays">0</span>
+        <div class="cu-label">дней</div>
+      </div>
+      <div class="countdown-unit">
+        <span class="cu-num" id="cdHours">0</span>
+        <div class="cu-label">часов</div>
+      </div>
+      <div class="countdown-unit">
+        <span class="cu-num" id="cdMins">0</span>
+        <div class="cu-label">минут</div>
+      </div>
+      <div class="countdown-unit">
+        <span class="cu-num" id="cdSecs">0</span>
+        <div class="cu-label">секунд</div>
+      </div>
+    </div>
+    <div class="countdown-bar-wrap">
+      <div class="countdown-bar-label">
+        <span id="cdFrom">—</span>
+        <span id="cdTo">—</span>
+      </div>
+      <div class="countdown-bar-track">
+        <div class="countdown-bar-fill" id="cdFill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       TIMELINE
+  ════════════════════════════════ -->
+  <div class="timeline-card">
+    <div class="timeline-label">наш путь</div>
+    <div class="timeline">
+
+      <div class="tl-item warm">
+        <div class="tl-dot"></div>
+        <div class="tl-date">23 ноября 2025</div>
+        <div class="tl-title">Начало</div>
+        <div class="tl-desc">День, который стал важным. Дата, которую теперь не забыть.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">23 декабря 2025</div>
+        <div class="tl-title">Первый месяц</div>
+        <div class="tl-desc">Первые 30 дней — уже история.</div>
+      </div>
+
+      <div class="tl-item rose">
+        <div class="tl-dot"></div>
+        <div class="tl-date">23 января 2026</div>
+        <div class="tl-title">Два месяца</div>
+        <div class="tl-desc">Привыкли думать друг о друге каждый день.</div>
+      </div>
+
+      <div class="tl-item warm">
+        <div class="tl-dot"></div>
+        <div class="tl-date">23 февраля 2026</div>
+        <div class="tl-title">Три месяца</div>
+        <div class="tl-desc">Зима прошла вместе.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">23 марта 2026</div>
+        <div class="tl-title">Четыре месяца</div>
+        <div class="tl-desc">Весна — и мы всё ещё здесь.</div>
+      </div>
+
+      <div class="tl-item rose">
+        <div class="tl-dot"></div>
+        <div class="tl-date">23 апреля 2026</div>
+        <div class="tl-title">Пять месяцев</div>
+        <div class="tl-desc">Пять — это уже не случайность.</div>
+      </div>
+
+      <div class="tl-item warm" id="tlNow">
+        <div class="tl-dot"></div>
+        <div class="tl-date">сейчас</div>
+        <div class="tl-title">Продолжается</div>
+        <div class="tl-desc">И пусть продолжается ещё долго.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       GALLERY
+  ════════════════════════════════ -->
+  <div class="gallery-card">
+    <div class="gallery-label">моменты</div>
+    <button class="gallery-add-btn" id="galleryAddBtn">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      добавить фото
+    </button>
+    <input type="file" id="galleryInput" accept="image/*" multiple>
+    <div class="gallery-grid" id="galleryGrid">
+      <div class="gallery-empty" id="galleryEmpty">пока пусто — добавь первое фото</div>
+    </div>
+  </div>
+
+  <!-- PLAYLIST -->
+  <div class="playlist-card">
+    <div class="playlist-label">наш плейлист</div>
+    <div class="pl-tracks" id="plTracks">
+      <div class="pl-empty" id="plEmpty">пока пусто — добавьте первый трек</div>
+    </div>
+    <div class="pl-add-form">
+      <div class="pl-form-row">
+        <input class="pl-input" id="plNameInput" placeholder="название трека" maxlength="60">
+        <button class="pl-who-btn" id="plWhoBtn">её трек</button>
+      </div>
+      <div class="pl-form-row">
+        <input class="pl-input" id="plUrlInput" placeholder="ссылка на YouTube" maxlength="200">
+      </div>
+      <div class="pl-form-row">
+        <button class="pl-add-btn" id="plAddBtn">+ добавить трек</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOON -->
+  <div class="moon-card">
+    <div class="moon-visual">
+      <div class="moon-glow"></div>
+      <svg class="moon-svg" id="moonSvg" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="moon-info">
+      <div class="moon-label">луна 23 ноября 2025</div>
+      <div class="moon-phase-name" id="moonPhaseName">Растущий серп</div>
+      <div class="moon-detail" id="moonDetail">в ту ночь, когда всё началось</div>
+      <div class="moon-pct" id="moonPct">освещённость — 4%</div>
+    </div>
+  </div>
+
+  <!-- DAILY QUOTE -->
+  <div class="quote-card">
+    <div class="quote-card-label">слово дня</div>
+    <div class="quote-text" id="quoteText"></div>
+    <div class="quote-author" id="quoteAuthor"></div>
+    <div class="quote-date-pill" id="quoteDatePill"></div>
+  </div>
+
+  <!-- NUMBERS HH -->
+  <div class="numbers-card">
+    <div class="numbers-label">наши числа</div>
+    <div class="numbers-grid">
+      <div class="num-block">
+        <div class="num-val" id="hhDays">0</div>
+        <div class="num-desc">дней вместе</div>
+      </div>
+      <div class="num-block">
+        <div class="num-val">153</div>
+        <div class="num-desc">км между нами</div>
+      </div>
+      <div class="num-block">
+        <div class="num-val" id="hhHours">0</div>
+        <div class="num-desc">часов вместе</div>
+      </div>
+      <div class="num-block">
+        <div class="num-val">2</div>
+        <div class="num-desc">города, один смысл</div>
+      </div>
+      <div class="num-block wide">
+        <div class="num-cities"><span>Хмельницький</span><div class="num-line"></div><span>Житомир</span></div>
+        <div class="num-desc">~2 часа пути — и ты уже рядом</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-text">23.11.2025 — дата, которая стала важной</div>
+    <div class="footer-love">тихо, по-настоящему, навсегда</div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+
+  /* ── DAYS COUNT-UP ── */
+  const START = new Date(2025,10,23);
+  const now0  = new Date();
+  const diffDays = Math.max(0, Math.floor((now0 - START) / 86400000));
+  const span = document.getElementById('daysTogether');
+  let count = 0;
+  const step = Math.max(1, Math.ceil(diffDays / 55));
+  const tmr = setInterval(() => {
+    count = Math.min(count + step, diffDays);
+    span.textContent = count;
+    if (count >= diffDays) clearInterval(tmr);
+  }, 16);
+
+  /* ── AUDIO ── */
+  const audio = document.getElementById('loveTrack');
+  const btn   = document.getElementById('playBtn');
+  const icon  = document.getElementById('playIcon');
+  const dot   = document.getElementById('trackDot');
+  const bar   = document.getElementById('progressBar');
+  const fill  = document.getElementById('progressFill');
+  const PLAY  = 'M8 5v14l11-7z';
+  const PAUSE = 'M6 19h4V5H6v14zm8-14v14h4V5h-4z';
+  let playing = false;
+  btn.addEventListener('click', () => {
+    if (playing) { audio.pause(); icon.querySelector('path').setAttribute('d', PLAY); dot.classList.remove('playing'); playing = false; }
+    else { audio.play().catch(()=>{}); icon.querySelector('path').setAttribute('d', PAUSE); dot.classList.add('playing'); bar.style.display='block'; playing=true; }
+  });
+  audio.addEventListener('timeupdate', () => { if(audio.duration) fill.style.width=(audio.currentTime/audio.duration*100)+'%'; });
+  audio.addEventListener('ended', () => { icon.querySelector('path').setAttribute('d', PLAY); dot.classList.remove('playing'); fill.style.width='0%'; playing=false; });
+
+  /* ── PHOTO SLOTS — Cloudinary upload + Firebase sync ── */
+  const PHOTO_CLOUD_NAME    = 'dpt0lh1pl';
+  const PHOTO_UPLOAD_PRESET = 'FFeelen';
+  const PHOTO_CLOUD_URL     = `https://api.cloudinary.com/v1_1/${PHOTO_CLOUD_NAME}/image/upload`;
+
+  function setProfileImg(imgId, url) {
+    const img = document.getElementById(imgId);
+    if (!img || !url) return;
+    img.src = url;
+    img.onload = () => img.classList.add('loaded');
+  }
+
+  async function uploadProfilePhoto(file, slot) {
+    // slot: 'him' | 'her'
+    const imgId = slot === 'him' ? 'imgHim' : 'imgHer';
+    // Optimistic preview
+    const img = document.getElementById(imgId);
+    img.src = URL.createObjectURL(file);
+    img.onload = () => img.classList.add('loaded');
+
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', PHOTO_UPLOAD_PRESET);
+      fd.append('public_id', 'profile_' + slot);
+      fd.append('overwrite', 'true');
+
+      const res  = await fetch(PHOTO_CLOUD_URL, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!data.secure_url) throw new Error('no url');
+
+      // Save to Firebase
+      if (window.__fb) {
+        const { db, ref, set } = window.__fb;
+        set(ref(db, 'profilePhotos/' + slot), { url: data.secure_url, ts: Date.now() });
+      }
+    } catch (err) {
+      console.error('Profile photo upload failed', err);
+    }
+  }
+
+  function setupPhoto(inputId, slot) {
+    document.getElementById(inputId).addEventListener('change', e => {
+      const f = e.target.files[0]; if (!f) return;
+      uploadProfilePhoto(f, slot);
+    });
+  }
+  setupPhoto('photoHim', 'him');
+  setupPhoto('photoHer', 'her');
+
+  // Load saved profile photos from Firebase when ready
+  window.addEventListener('fbReady', () => {
+    const { db, ref, onValue } = window.__fb;
+    onValue(ref(db, 'profilePhotos'), snap => {
+      const data = snap.val();
+      if (!data) return;
+      if (data.him && data.him.url) setProfileImg('imgHim', data.him.url);
+      if (data.her && data.her.url) setProfileImg('imgHer', data.her.url);
+    });
+  });
+
+  /* ── COUNTDOWN ── */
+  function getNextAnniversary() {
+    const now = new Date();
+    let m = new Date(now.getFullYear(), now.getMonth(), 23, 0, 0, 0);
+    if (m <= now) m = new Date(m.getFullYear(), m.getMonth()+1, 23, 0, 0, 0);
+    return m;
+  }
+
+  function getPrevAnniversary(next) {
+    return new Date(next.getFullYear(), next.getMonth()-1, 23, 0, 0, 0);
+  }
+
+  const MONTHS_RU = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+
+  function updateCountdown() {
+    const now  = new Date();
+    const next = getNextAnniversary();
+    const prev = getPrevAnniversary(next);
+    const total = next - prev;
+    const left  = next - now;
+    const pct   = Math.max(0, Math.min(100, ((total - left) / total * 100)));
+
+    const d = Math.floor(left / 86400000);
+    const h = Math.floor((left % 86400000) / 3600000);
+    const m = Math.floor((left % 3600000) / 60000);
+    const s = Math.floor((left % 60000) / 1000);
+
+    function setFlip(id, val) {
+      const el = document.getElementById(id);
+      const v2 = String(val).padStart(2,'0');
+      if (el.textContent !== v2) {
+        el.textContent = v2;
+        el.classList.remove('flip');
+        void el.offsetWidth;
+        el.classList.add('flip');
+      }
+    }
+    setFlip('cdDays',  d);
+    setFlip('cdHours', h);
+    setFlip('cdMins',  m);
+    setFlip('cdSecs',  s);
+
+    document.getElementById('cdFill').style.width = pct.toFixed(1) + '%';
+
+    const mnLabel = MONTHS_RU[next.getMonth()];
+    document.getElementById('cdNextLabel').textContent = `месяцевщины в ${mnLabel}`;
+    document.getElementById('cdFrom').textContent = `${prev.getDate()}.${String(prev.getMonth()+1).padStart(2,'0')}`;
+    document.getElementById('cdTo').textContent   = `23.${String(next.getMonth()+1).padStart(2,'0')}`;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ── TIMELINE SCROLL REVEAL ── */
+  const tlItems = document.querySelectorAll('.tl-item');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 120);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  tlItems.forEach(el => obs.observe(el));
+
+  /* ── GALLERY — Cloudinary upload + Firebase sync ── */
+  const CLOUD_NAME   = 'dpt0lh1pl';
+  const UPLOAD_PRESET = 'FFeelen';
+  const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+
+  const galleryInput = document.getElementById('galleryInput');
+  const galleryGrid  = document.getElementById('galleryGrid');
+  const galleryEmpty = document.getElementById('galleryEmpty');
+  const addBtn       = document.getElementById('galleryAddBtn');
+
+  addBtn.addEventListener('click', () => galleryInput.click());
+
+  // Build gallery item from a photo record {id, url, caption}
+  function buildGalleryItem(record) {
+    const { id, url, caption } = record;
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.dataset.photoId = id;
+    item.innerHTML = `
+      <div class="gallery-img-wrap">
+        <img src="${url}" alt="" loading="lazy">
+        <div class="gallery-overlay"></div>
+      </div>
+      <div class="gallery-caption-wrap">
+        <textarea class="gallery-caption" rows="1" placeholder="подпись...">${caption||''}</textarea>
+        <button class="gallery-del" title="удалить">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+
+    // Delete — remove from Firebase, photo stays in Cloudinary (free tier)
+    item.querySelector('.gallery-del').addEventListener('click', () => {
+      item.style.transition = 'opacity 0.25s, transform 0.25s';
+      item.style.opacity = '0'; item.style.transform = 'scale(0.9)';
+      if (window.__fb) {
+        const { db, ref, remove } = window.__fb;
+        remove(ref(db, 'gallery/' + id));
+      }
+      setTimeout(() => {
+        item.remove();
+        if (!galleryGrid.querySelector('.gallery-item'))
+          galleryEmpty && (galleryEmpty.style.display = '');
+      }, 260);
+    });
+
+    // Caption — auto-resize + debounced Firebase write
+    const ta = item.querySelector('.gallery-caption');
+    ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px';
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px';
+      clearTimeout(ta._fbTimer);
+      ta._fbTimer = setTimeout(() => {
+        if (window.__fb) {
+          const { db, ref, update } = window.__fb;
+          update(ref(db, 'gallery/' + id), { caption: ta.value });
+        }
+      }, 700);
+    });
+
+    return item;
+  }
+
+  // Upload one file to Cloudinary, then save record to Firebase
+  async function uploadFile(file) {
+    const photoId = 'p' + Date.now() + Math.random().toString(36).slice(2,5);
+
+    // Show skeleton placeholder while uploading
+    const placeholder = document.createElement('div');
+    placeholder.className = 'gallery-item';
+    placeholder.style.cssText = 'opacity:0.4;';
+    placeholder.innerHTML = `<div class="gallery-img-wrap" style="background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;">
+      <div style="font-size:0.55rem;color:#3a4d72;letter-spacing:2px;text-transform:uppercase;padding:2rem 0;animation:pulse 1.4s ease infinite;">загрузка</div>
+    </div>`;
+    galleryEmpty && (galleryEmpty.style.display = 'none');
+    galleryGrid.appendChild(placeholder);
+
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', UPLOAD_PRESET);
+      fd.append('public_id', photoId);
+
+      const res  = await fetch(CLOUDINARY_URL, { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (!data.secure_url) throw new Error('no url');
+
+      const record = { id: photoId, url: data.secure_url, caption: '', ts: Date.now() };
+
+      // Save to Firebase — onValue listener will render it for both users
+      if (window.__fb) {
+        const { db, ref, set } = window.__fb;
+        set(ref(db, 'gallery/' + photoId), record);
+      } else {
+        // Fallback — no Firebase yet, render locally
+        placeholder.replaceWith(buildGalleryItem(record));
+      }
+    } catch (err) {
+      console.error('Cloudinary upload failed', err);
+      placeholder.innerHTML = `<div class="gallery-img-wrap" style="display:flex;align-items:center;justify-content:center;padding:1.5rem;"><div style="font-size:0.55rem;color:#c07070;letter-spacing:1px;">ошибка загрузки</div></div>`;
+    } finally {
+      // Remove placeholder if it's still there (Firebase listener will add real item)
+      setTimeout(() => { if (placeholder.parentNode) placeholder.remove(); }, 500);
+    }
+  }
+
+  galleryInput.addEventListener('change', e => {
+    Array.from(e.target.files).forEach(uploadFile);
+    galleryInput.value = '';
+  });
+
+  // ── Firebase: listen to gallery node, render all photos for BOTH users ──
+  window.addEventListener('fbReady', () => {
+    const { db, ref, onValue } = window.__fb;
+    onValue(ref(db, 'gallery'), snap => {
+      const data = snap.val();
+
+      // Build sorted list
+      const records = data
+        ? Object.values(data).sort((a,b) => (a.ts||0)-(b.ts||0))
+        : [];
+
+      // Sync DOM — add missing, update captions, remove deleted
+      const existingIds = new Set(
+        Array.from(galleryGrid.querySelectorAll('.gallery-item')).map(el => el.dataset.photoId)
+      );
+      const incomingIds = new Set(records.map(r => r.id));
+
+      // Remove items deleted by other user
+      galleryGrid.querySelectorAll('.gallery-item').forEach(el => {
+        if (!incomingIds.has(el.dataset.photoId)) {
+          el.style.transition = 'opacity 0.3s'; el.style.opacity = '0';
+          setTimeout(() => el.remove(), 300);
+        }
+      });
+
+      // Add new items
+      records.forEach(record => {
+        if (!existingIds.has(record.id)) {
+          const item = buildGalleryItem(record);
+          galleryGrid.appendChild(item);
+        } else {
+          // Update caption if changed by other user (don't override if focused)
+          const item = galleryGrid.querySelector(`[data-photo-id="${record.id}"]`);
+          if (item) {
+            const ta = item.querySelector('.gallery-caption');
+            if (ta && document.activeElement !== ta && ta.value !== (record.caption||'')) {
+              ta.value = record.caption || '';
+              ta.style.height='auto'; ta.style.height = ta.scrollHeight+'px';
+            }
+          }
+        }
+      });
+
+      if (galleryGrid.querySelector('.gallery-item')) {
+        galleryEmpty && (galleryEmpty.style.display = 'none');
+      } else {
+        galleryEmpty && (galleryEmpty.style.display = '');
+      }
+    });
+  });
+
+  /* ── METEOR CANVAS ── */
+  (function() {
+    const canvas = document.getElementById('meteorCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const meteors = [];
+    function spawnMeteor() {
+      const angle = Math.PI / 5;
+      const x = Math.random() * W * 1.4 - W * 0.2;
+      const y = Math.random() * H * 0.5 - 50;
+      const speed = Math.random() * 2.5 + 1.5;
+      const len = Math.random() * 90 + 50;
+      const life = len / speed;
+      const hue = Math.random() > 0.6 ? 220 : 280;
+      meteors.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, len, life, age: 0, hue });
+    }
+
+    let spawnTimer = 0;
+    function draw(ts) {
+      ctx.clearRect(0, 0, W, H);
+      spawnTimer++;
+      if (spawnTimer > 55) { spawnMeteor(); spawnTimer = 0; }
+
+      for (let i = meteors.length - 1; i >= 0; i--) {
+        const m = meteors[i];
+        m.age++;
+        m.x += m.vx;
+        m.y += m.vy;
+        const t = m.age / m.life;
+        const alpha = t < 0.15 ? t / 0.15 : t > 0.7 ? (1 - t) / 0.3 : 1;
+        const tailX = m.x - m.vx * (m.len / Math.hypot(m.vx, m.vy));
+        const tailY = m.y - m.vy * (m.len / Math.hypot(m.vx, m.vy));
+        const grad = ctx.createLinearGradient(tailX, tailY, m.x, m.y);
+        grad.addColorStop(0, `hsla(${m.hue},70%,80%,0)`);
+        grad.addColorStop(1, `hsla(${m.hue},70%,90%,${(alpha * 0.55).toFixed(2)})`);
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(m.x, m.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        if (m.age >= m.life) meteors.splice(i, 1);
+      }
+      requestAnimationFrame(draw);
+    }
+    spawnMeteor(); spawnMeteor();
+    requestAnimationFrame(draw);
+  })();
+
+  /* ── THOUGHT CARD ── */
+  (function() {
+    const phrases = [
+      'Ты появляешься в мыслях именно тогда, когда я хочу думать о чём-то другом.',
+      'Мне нравится, что ты существуешь. Просто так. Без условий.',
+      'Когда ты пишешь первой — мой день сразу становится другим.',
+      'Ты умеешь быть тихой — и от этого ещё теплее.',
+      'Не знаю, как ты это делаешь, но рядом с тобой всё проще.',
+      'Иногда я просто хочу, чтобы ты знала: думаю о тебе.',
+      'Ты — та причина, по которой я не тороплюсь засыпать.',
+      'Ты не знаешь, как выглядишь, когда задумываешься. Я знаю.',
+      'Каждый день с тобой — это что-то, что хочется запомнить.',
+      'Ты моя самая любимая часть этого всего.',
+    ];
+    let current = -1;
+    let typingTimer = null;
+
+    function pickNext() {
+      let idx;
+      do { idx = Math.floor(Math.random() * phrases.length); } while (idx === current);
+      return (current = idx, phrases[idx]);
+    }
+
+    const typed = document.getElementById('thoughtTyped');
+    const btn   = document.getElementById('thoughtBtn');
+    const block = document.getElementById('thoughtText');
+
+    function typePhrase(text) {
+      typed.textContent = '';
+      let i = 0;
+      clearInterval(typingTimer);
+      typingTimer = setInterval(() => {
+        typed.textContent += text[i++];
+        if (i >= text.length) clearInterval(typingTimer);
+      }, 38);
+    }
+
+    function showNext() {
+      block.classList.add('fading');
+      setTimeout(() => {
+        block.classList.remove('fading');
+        typePhrase(pickNext());
+      }, 350);
+    }
+
+    btn.addEventListener('click', showNext);
+    // Auto-start on load
+    setTimeout(() => typePhrase(pickNext()), 1400);
+  })();
+
+  /* ── PARTICLES ── */
+  const pc = document.getElementById('particles');
+  for (let i = 0; i < 26; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const sz  = Math.random() * 2 + 0.8;
+    const dur = Math.random() * 22 + 14;
+    const del = -Math.random() * dur;
+    const blue = Math.random() > 0.5;
+    p.style.cssText = `left:${Math.random()*100}%;bottom:-4px;width:${sz}px;height:${sz}px;background:rgba(${blue?'140,170,255':'210,150,180'},${(Math.random()*0.2+0.05).toFixed(2)});animation-duration:${dur}s;animation-delay:${del}s;`;
+    pc.appendChild(p);
+  }
+
+})();
+
+/* ══════════════════════════════════════════════════════
+   FIREBASE — реальное время
+   Плейлист и галерея-подписи синхронизированы между
+   Димой и Вероникой автоматически.
+══════════════════════════════════════════════════════ */
+const FB_CONFIG = {
+  apiKey:            "AIzaSyAJi2oIkfC4tAxuaxqKdAKU8kCzfhV6Cbc",
+  authDomain:        "ffeelen-888.firebaseapp.com",
+  databaseURL:       "https://ffeelen-888-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "ffeelen-888",
+  storageBucket:     "ffeelen-888.firebasestorage.app",
+  messagingSenderId: "238109842825",
+  appId:             "1:238109842825:web:e756a4ba23ba65089c1558"
+};
+
+// ── Firebase loader ──
+let fbDatabase = null;
+(function loadFirebase() {
+  const sdk = document.createElement('script');
+  sdk.type = 'module';
+  sdk.textContent = `
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getDatabase, ref, set, push, remove, onValue, update }
+  from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+
+const app = initializeApp(${JSON.stringify(FB_CONFIG)});
+const db  = getDatabase(app);
+
+// Expose helpers to window so IIFE code can use them
+window.__fb = { db, ref, set, push, remove, onValue, update };
+window.dispatchEvent(new Event('fbReady'));
+  `;
+  document.head.appendChild(sdk);
+})();
+
+// ── Sync status badge ──
+(function() {
+  const badge = document.createElement('div');
+  badge.id = 'fbBadge';
+  badge.style.cssText = `
+    position:fixed; bottom:1.2rem; right:1.2rem; z-index:1000;
+    background:rgba(10,14,28,0.88); backdrop-filter:blur(12px);
+    border:0.5px solid rgba(80,120,200,0.25); border-radius:40px;
+    padding:0.35rem 0.85rem; font-family:'DM Mono',monospace;
+    font-size:0.52rem; letter-spacing:2px; text-transform:uppercase;
+    color:#3a4d72; display:flex; align-items:center; gap:0.4rem;
+    transition:color 0.4s, border-color 0.4s;
+  `;
+  badge.innerHTML = `<span id="fbDot" style="width:5px;height:5px;border-radius:50%;background:#3a4d72;display:inline-block;transition:background 0.4s;"></span><span id="fbStatus">подключение</span>`;
+  document.body.appendChild(badge);
+
+  window.addEventListener('fbReady', () => {
+    document.getElementById('fbDot').style.background    = '#6a9e6a';
+    document.getElementById('fbStatus').textContent       = 'в эфире';
+    badge.style.color        = '#6a9e6a';
+    badge.style.borderColor  = 'rgba(80,160,80,0.3)';
+    setTimeout(() => {
+      badge.style.color       = '#3a4d72';
+      badge.style.borderColor = 'rgba(80,120,200,0.25)';
+      document.getElementById('fbDot').style.background = '#3a4d72';
+      document.getElementById('fbStatus').textContent    = 'синхронизировано';
+    }, 3000);
+  });
+})();
+
+/* ── PLAYLIST — YouTube фоновый плеер (P) ── */
+(function() {
+  const tracks = [];
+  let whoState  = 'her';
+  let currentIdx = -1;
+  let ytPlayer   = null;
+  let ytReady    = false;
+  let fbReady    = false;
+  let plRef      = null;
+  let _suppressRender = false; // prevent echo when we write to FB ourselves
+
+  // Скрытый div для YouTube IFrame API
+  const ytDiv = document.createElement('div');
+  ytDiv.id = 'ytPlayerHidden';
+  ytDiv.style.cssText = 'position:fixed;bottom:-9999px;left:-9999px;width:1px;height:1px;';
+  document.body.appendChild(ytDiv);
+
+  // Загружаем YouTube IFrame API
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+
+  window.onYouTubeIframeAPIReady = function() {
+    ytPlayer = new YT.Player('ytPlayerHidden', {
+      height:'1', width:'1',
+      playerVars:{ autoplay:0, controls:0 },
+      events:{
+        onReady: () => { ytReady = true; },
+        onStateChange: (e) => {
+          // Трек закончился — останавливаем анимацию
+          if (e.data === YT.PlayerState.ENDED) {
+            stopCurrent();
+          }
+        }
+      }
+    });
+  };
+
+  function extractYtId(url) {
+    try {
+      const u = new URL(url.trim());
+      if (u.hostname.includes('youtu.be')) return u.pathname.slice(1).split('?')[0];
+      return u.searchParams.get('v') || '';
+    } catch { return ''; }
+  }
+
+  function stopCurrent() {
+    if (ytPlayer && ytReady) ytPlayer.stopVideo();
+    document.querySelectorAll('.pl-track').forEach(el => el.classList.remove('playing-now'));
+    document.querySelectorAll('.pl-play-btn').forEach(btn => {
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    });
+    currentIdx = -1;
+  }
+
+  function playTrack(idx) {
+    if (!ytReady) return;
+    const t = tracks[idx];
+    const ytId = extractYtId(t.url);
+    if (!ytId) return;
+
+    if (currentIdx === idx) { stopCurrent(); return; }
+    stopCurrent();
+
+    currentIdx = idx;
+    ytPlayer.loadVideoById(ytId);
+    ytPlayer.playVideo();
+
+    // Обновляем UI
+    const cards = document.querySelectorAll('.pl-track');
+    const btns  = document.querySelectorAll('.pl-play-btn');
+    if (cards[idx]) cards[idx].classList.add('playing-now');
+    if (btns[idx])  btns[idx].innerHTML = `
+      <div class="pl-playing-dots" style="color:${t.who==='her'?'var(--accent-rose)':'var(--accent-blue)'}">
+        <span></span><span></span><span></span>
+      </div>`;
+  }
+
+  const whoBtn  = document.getElementById('plWhoBtn');
+  const addBtn  = document.getElementById('plAddBtn');
+  const nameIn  = document.getElementById('plNameInput');
+  const urlIn   = document.getElementById('plUrlInput');
+  const list    = document.getElementById('plTracks');
+  const emptyEl = document.getElementById('plEmpty');
+
+  whoBtn.addEventListener('click', () => {
+    whoState = whoState === 'her' ? 'his' : 'her';
+    whoBtn.textContent = whoState === 'her' ? 'её трек' : 'его трек';
+    whoBtn.className   = whoState === 'her' ? 'pl-who-btn' : 'pl-who-btn his';
+  });
+
+  function renderAll() {
+    list.innerHTML = '';
+    if (!tracks.length) { list.appendChild(emptyEl); return; }
+    tracks.forEach((t, i) => {
+      const isPlaying = currentIdx === i;
+      const div = document.createElement('div');
+      div.className = 'pl-track ' + (t.who === 'her' ? 'hers' : 'his') + (isPlaying ? ' playing-now' : '');
+      div.innerHTML = `
+        <div class="pl-track-header">
+          <div class="pl-track-bar"></div>
+          <div class="pl-track-info">
+            <div class="pl-track-name">${t.name}</div>
+            <div class="pl-track-meta">${t.who === 'her' ? 'её трек' : 'его трек'}</div>
+          </div>
+          <button class="pl-play-btn" title="${isPlaying?'стоп':'играть'}">
+            ${isPlaying
+              ? `<div class="pl-playing-dots" style="color:${t.who==='her'?'var(--accent-rose)':'var(--accent-blue)'}"><span></span><span></span><span></span></div>`
+              : `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`}
+          </button>
+          <button class="pl-del-btn" title="удалить">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="pl-embed-wrap"></div>`;
+
+      div.querySelector('.pl-play-btn').addEventListener('click', () => playTrack(i));
+      div.querySelector('.pl-del-btn').addEventListener('click', () => window.__fbDelTrack(i));
+      list.appendChild(div);
+    });
+  }
+
+  function addTrack() {
+    const name = nameIn.value.trim();
+    const url  = urlIn.value.trim();
+    if (!name || !url) { (name ? urlIn : nameIn).focus(); return; }
+    if (!extractYtId(url)) {
+      urlIn.style.borderColor = 'rgba(200,80,80,0.5)';
+      setTimeout(() => urlIn.style.borderColor = '', 1200);
+      return;
+    }
+    const track = { name, url, who: whoState, ts: Date.now() };
+    nameIn.value = ''; urlIn.value = '';
+
+    if (fbReady && plRef) {
+      // Push to Firebase — onValue listener will re-render
+      const { push } = window.__fb;
+      push(plRef, track);
+    } else {
+      tracks.push(track);
+      renderAll();
+    }
+  }
+
+  // ── Firebase playlist sync ──
+  window.addEventListener('fbReady', () => {
+    fbReady = true;
+    const { db, ref, onValue, remove } = window.__fb;
+    plRef = ref(db, 'playlist');
+
+    onValue(plRef, snap => {
+      tracks.length = 0;
+      const data = snap.val();
+      if (data) {
+        // Convert object to sorted array, attach fbKey
+        Object.entries(data)
+          .sort(([,a],[,b]) => (a.ts||0) - (b.ts||0))
+          .forEach(([key, val]) => tracks.push({ ...val, fbKey: key }));
+      }
+      const prevIdx = currentIdx;
+      renderAll();
+      // Restore playing state after re-render if same track still exists
+      if (prevIdx >= 0 && prevIdx < tracks.length) currentIdx = prevIdx;
+    });
+
+    // Patch renderAll del button to remove from Firebase
+    const origDel = __fbDelTrack;
+    window.__fbDelTrack = (idx) => {
+      const t = tracks[idx];
+      if (t && t.fbKey) {
+        const { ref, remove } = window.__fb;
+        remove(ref(db, 'playlist/' + t.fbKey));
+      } else {
+        if (currentIdx === idx) stopCurrent();
+        else if (currentIdx > idx) currentIdx--;
+        tracks.splice(idx, 1);
+        renderAll();
+      }
+    };
+  });
+
+  // Stub until Firebase ready — for direct del without FB
+  window.__fbDelTrack = (idx) => {
+    if (currentIdx === idx) stopCurrent();
+    else if (currentIdx > idx) currentIdx--;
+    tracks.splice(idx, 1);
+    renderAll();
+  };
+
+  addBtn.addEventListener('click', addTrack);
+  urlIn.addEventListener('keydown',  e => { if (e.key === 'Enter') addTrack(); });
+  nameIn.addEventListener('keydown', e => { if (e.key === 'Enter') urlIn.focus(); });
+})();
+
+/* ── MOON (V) ── */
+(function() {
+  // Moon phase for 2025-11-23
+  // Known new moon: 2025-11-01 ~05:47 UTC => age on Nov 23 = 22 days
+  // Cycle = 29.53 days; illumination = (1 - cos(2π * age/cycle)) / 2
+  const age = 22; // days since new moon
+  const cycle = 29.53;
+  const illumination = (1 - Math.cos(2 * Math.PI * age / cycle)) / 2;
+  const pct = Math.round(illumination * 100);
+
+  // Phase name
+  const phases = [
+    [0,   1.85, 'Новолуние'],
+    [1.85,7.38, 'Растущий серп'],
+    [7.38,11.08,'Первая четверть'],
+    [11.08,14.77,'Растущая луна'],
+    [14.77,16.62,'Полнолуние'],
+    [16.62,22.15,'Убывающая луна'],
+    [22.15,25.84,'Последняя четверть'],
+    [25.84,29.53,'Убывающий серп'],
+  ];
+  let phaseName = 'Убывающий серп';
+  for (const [lo, hi, name] of phases) {
+    if (age >= lo && age < hi) { phaseName = name; break; }
+  }
+
+  document.getElementById('moonPhaseName').textContent = phaseName;
+  document.getElementById('moonPct').textContent = `освещённость — ${pct}%`;
+
+  // Draw moon SVG
+  const svg = document.getElementById('moonSvg');
+  const R = 28, cx = 36, cy = 36;
+
+  // Background circle (dark)
+  const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  bg.setAttribute('cx', cx); bg.setAttribute('cy', cy); bg.setAttribute('r', R);
+  bg.setAttribute('fill', '#0a0c1a');
+  bg.setAttribute('stroke', 'rgba(180,180,240,0.12)'); bg.setAttribute('stroke-width','0.5');
+  svg.appendChild(bg);
+
+  // Lit portion using clip path approach
+  // For waxing gibbous (~age 22 out of 29.53 = past full, waning gibbous)
+  // We draw the lit face as a path
+  // angle = 2π * age / cycle
+  const angle = 2 * Math.PI * age / cycle;
+  // x-scale of terminator ellipse
+  const xScale = Math.cos(angle); // negative = waning
+
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  const clipId = 'moonClip';
+  const clipPath = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
+  clipPath.setAttribute('id', clipId);
+  const clipCircle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  clipCircle.setAttribute('cx', cx); clipCircle.setAttribute('cy', cy); clipCircle.setAttribute('r', R);
+  clipPath.appendChild(clipCircle);
+  defs.appendChild(clipPath);
+  svg.appendChild(defs);
+
+  // Lit half: always right half for waning (age > 14.77)
+  // Build path: semicircle on lit side + ellipse terminator
+  const isWaning = age > 14.77;
+  const sweep = isWaning ? 1 : 0; // arc sweep
+  const ex = cx + xScale * R; // terminator x-extent
+
+  // Path: top of circle → arc down right side → arc terminator back → done
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  const topY = cy - R, botY = cy + R;
+  // Right semicircle (lit side for waning), terminator ellipse
+  let d;
+  if (isWaning) {
+    // lit = right half, terminator curves inward (waning)
+    d = `M ${cx} ${topY} A ${R} ${R} 0 0 1 ${cx} ${botY} A ${Math.abs(xScale)*R} ${R} 0 0 ${xScale>0?0:1} ${cx} ${topY} Z`;
+  } else {
+    // lit = left half flipped, waxing
+    d = `M ${cx} ${topY} A ${R} ${R} 0 0 0 ${cx} ${botY} A ${Math.abs(xScale)*R} ${R} 0 0 ${xScale>0?1:0} ${cx} ${topY} Z`;
+  }
+  path.setAttribute('d', d);
+  path.setAttribute('clip-path', `url(#${clipId})`);
+  const grad = document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
+  grad.setAttribute('id','moonGrad'); grad.setAttribute('cx','60%'); grad.setAttribute('cy','40%'); grad.setAttribute('r','65%');
+  const s1 = document.createElementNS('http://www.w3.org/2000/svg','stop');
+  s1.setAttribute('offset','0%'); s1.setAttribute('stop-color','#f0f0ff');
+  const s2 = document.createElementNS('http://www.w3.org/2000/svg','stop');
+  s2.setAttribute('offset','100%'); s2.setAttribute('stop-color','#c8cce8');
+  grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad);
+  path.setAttribute('fill','url(#moonGrad)');
+  svg.appendChild(path);
+
+  // Subtle craters
+  [[cx+6,cy-4,3.5],[cx-5,cy+8,2.5],[cx+10,cy+9,2],[cx+2,cy+2,1.5]].forEach(([x,y,r]) => {
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',r);
+    c.setAttribute('fill','rgba(0,0,20,0.12)'); c.setAttribute('clip-path',`url(#${clipId})`);
+    svg.appendChild(c);
+  });
+})();
+
+/* ── DAILY QUOTE (W) ── */
+(function() {
+  const quotes = [
+    { text: 'Любить — значит находить в счастье другого своё собственное счастье.', author: 'Лейбниц' },
+    { text: 'Там, где кончаются слова, начинается музыка. Там, где кончается музыка, начинается любовь.', author: 'Г. Гейне' },
+    { text: 'Одно мгновение способно изменить день, один день — изменить жизнь, одна жизнь — изменить мир.', author: 'Будда' },
+    { text: 'Истинная любовь не знает расстояний.', author: 'неизвестно' },
+    { text: 'Любовь — это не взгляд друг на друга, а взгляд в одном направлении.', author: 'А. де Сент-Экзюпери' },
+    { text: 'Два человека, которые любят друг друга, — это острова, которые тянутся друг к другу.', author: 'Г. Маттсон' },
+    { text: 'Счастье — это когда тебя понимают. Большое счастье — это когда тебя любят.', author: 'А. Моруа' },
+    { text: 'Где нет любви, нет и красоты.', author: 'Ф. Достоевский' },
+    { text: 'Любовь — это единственная вещь, которая растёт, когда ею делишься.', author: 'Антуан де Сент-Экзюпери' },
+    { text: 'Быть любимым — это всё. Лучше внушать любовь, чем восхищение.', author: 'В. Гюго' },
+    { text: 'Нет ничего прекраснее, чем человек, который искренне любит.', author: 'неизвестно' },
+    { text: 'В любви важно не то, что говорят, а то, что чувствуют.', author: 'неизвестно' },
+    { text: 'Время, проведённое рядом с теми, кого любишь, никогда не бывает потеряно.', author: 'Блез Паскаль' },
+    { text: 'Люди созданы друг для друга.', author: 'Марк Аврелий' },
+    { text: 'Любить — это смотреть не друг на друга, а вместе — в одну сторону.', author: 'Р. М. Рильке' },
+    { text: 'Нет ничего невозможного для того, кто любит.', author: 'Вольтер' },
+    { text: 'Самое великое чудо — любить.', author: 'Жан де Лабрюйер' },
+    { text: 'Любовь — это победа воображения над умом.', author: 'Г. Менкен' },
+    { text: 'Любовь — это решение, а не чувство.', author: 'Э. Фромм' },
+    { text: 'Если хочешь жить, люби. Если хочешь любить, живи.', author: 'неизвестно' },
+    { text: 'Любящее сердце — начало всякого знания.', author: 'Т. Карлейль' },
+    { text: 'Любовь — это тихое место в шуме мира.', author: 'неизвестно' },
+    { text: 'Тот, кто любит, тот не стареет.', author: 'неизвестно' },
+    { text: 'Мир держится на любви.', author: 'Л. Толстой' },
+    { text: 'Сердце любящего подобно небу после дождя.', author: 'неизвестно' },
+    { text: 'Любовь — это не существительное, это глагол.', author: 'С. Кови' },
+    { text: 'Любить по-настоящему — значит желать счастья другому.', author: 'Г. Лейбниц' },
+    { text: 'Самое важное — это быть рядом, даже молча.', author: 'неизвестно' },
+    { text: 'Любовь — это не то, что ты находишь. Это то, что растёт внутри тебя.', author: 'Дж. Бьюкенен' },
+    { text: 'Два сердца, бьющиеся в унисон — уже целая вселенная.', author: 'неизвестно' },
+  ];
+
+  const el    = document.getElementById('quoteText');
+  const auth  = document.getElementById('quoteAuthor');
+  const pill  = document.getElementById('quoteDatePill');
+
+  // Pick quote based on day of year so it changes daily
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now - start) / 86400000);
+  const idx = dayOfYear % quotes.length;
+  const q = quotes[idx];
+
+  const MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+
+  // Typewriter for quote
+  let i = 0;
+  el.textContent = '';
+  auth.textContent = '';
+  pill.textContent = `${now.getDate()} ${MONTHS[now.getMonth()]}`;
+
+  function typeQuote() {
+    if (i < q.text.length) {
+      el.textContent += q.text[i++];
+      setTimeout(typeQuote, 28);
+    } else {
+      setTimeout(() => { auth.textContent = '— ' + q.author; }, 300);
+    }
+  }
+  setTimeout(typeQuote, 1800);
+})();
+/* ── NUMBERS (HH) ── */
+(function() {
+  const START = new Date(2025,10,23);
+  const now = new Date();
+  const days = Math.max(0, Math.floor((now - START) / 86400000));
+  const hours = days * 24;
+
+  function animCount(id, target, duration) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const step = Math.ceil(target / (duration / 16));
+    let val = 0;
+    const t = setInterval(() => {
+      val = Math.min(val + step, target);
+      el.textContent = val.toLocaleString('ru');
+      if (val >= target) clearInterval(t);
+    }, 16);
+  }
+
+  setTimeout(() => {
+    animCount('hhDays', days, 800);
+    animCount('hhHours', hours, 1000);
+  }, 600);
+})();
+</script>
+</body>
+</html>
